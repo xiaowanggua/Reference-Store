@@ -42,7 +42,7 @@ jobs:
         with:
           bin: ref,refstore-server,refstore-mcp
           target: ${{ matrix.target }}
-          archive: $bin-$tag-$target
+          archive: refstore-$tag-$target
           ref: refs/tags/${{ inputs.tag }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
