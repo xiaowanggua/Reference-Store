@@ -20,6 +20,11 @@ A Rust CLI literature management tool designed for AI usage. With AI Skills inte
 ## Installation
 
 ```bash
+# Option A: Download from GitHub Releases
+# 1) Download the latest archive for your OS
+# 2) Extract it and run setup:
+./ref setup
+
 # Build
 cargo build --release
 

@@ -20,6 +20,11 @@
 ## 安装
 
 ```bash
+# 方式一：从 GitHub Releases 下载
+# 1）下载对应系统的最新压缩包
+# 2）解压后执行 setup：
+./ref setup
+
 # 构建
 cargo build --release
 
