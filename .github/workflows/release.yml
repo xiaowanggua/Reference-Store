@@ -8,10 +8,45 @@ on:
         required: true
         type: string
 
+permissions:
+  contents: read
+
 jobs:
+  create-release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Create tag if missing
+        run: |
+          set -euo pipefail
+          tag="${{ inputs.tag }}"
+          if git ls-remote --tags origin "refs/tags/${tag}" | grep -q "${tag}"; then
+            echo "Tag ${tag} already exists on origin."
+          else
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git tag "${tag}"
+            git push origin "${tag}"
+          fi
+
+      - name: Create GitHub Release
+        uses: taiki-e/create-gh-release-action@v1
+        with:
+          ref: refs/tags/${{ inputs.tag }}
+          allow-missing-changelog: true
+
   build-and-upload:
     name: build (${{ matrix.target }})
+    needs: create-release
     runs-on: ${{ matrix.os }}
+    permissions:
+      contents: write
     strategy:
       fail-fast: false
       matrix:
