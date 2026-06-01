@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang='{{ lang }}'>
+<head>
+<meta charset='utf-8'>
+<title>{{ paper.title }} - Refstore</title>
+<style>
+body { font-family: -apple-system, sans-serif; margin: 2rem; background: #f8f9fa; max-width: 800px; }
+h1 { color: #333; }
+h2 { color: #555; margin-top: 1.5rem; }
+.field { margin-bottom: 1rem; }
+.field-label { font-weight: 600; color: #555; }
+.tags span { background: #e3ecfa; border-radius: 4px; padding: 2px 8px; margin-right: 4px; }
+a { color: #4a6fa5; }
+.actions { margin: 1.5rem 0; }
+.actions a { margin-right: 1rem; }
+.note { background: white; padding: 1rem; border-radius: 6px; margin-bottom: .5rem; box-shadow: 0 1px 2px rgba(0,0,0,.05); }
+.cite { background: white; padding: 8px 14px; border-radius: 6px; margin-bottom: .3rem; box-shadow: 0 1px 2px rgba(0,0,0,.05); font-size: .95em; }
+#graph-container { width: 100%; height: 400px; border: 1px solid #ddd; border-radius: 8px; background: white; margin-top: 1rem; }
+.nav { margin-bottom: 1rem; display: flex; align-items: center; }
+.nav a { margin-right: 1rem; }
+.lang-toggle { font-size: .85em; opacity: .7; border: 1px solid #ccc; padding: 2px 8px; border-radius: 4px; }
+</style>
+</head><body>
+<div class='nav'>
+<a href='/'>{{ i18n.link_back }}</a>
+<a href='{{ i18n.nav_lang_url }}' class='lang-toggle'>{{ i18n.nav_lang_label }}</a>
+</div>
+<h1>{{ paper.title }}</h1>
+
+<div class='field'><span class='field-label'>{{ i18n.label_authors }}</span> {% for a in paper.authors %}{{ a }}{% if !loop.last %}, {% endif %}{% endfor %}</div>
+{% match paper.abstract_text %}
+{% when Some with (abs) %}
+<div class='field'><span class='field-label'>{{ i18n.label_abstract }}</span><p>{{ abs }}</p></div>
+{% when None %}
+{% endmatch %}
+{% match paper.source_url %}
+{% when Some with (url) %}
+<div class='field'><span class='field-label'>{{ i18n.label_url }}</span> <a href='{{ url }}'>{{ url }}</a></div>
+{% when None %}
+{% endmatch %}
+{% match paper.doi %}
+{% when Some with (doi) %}
+<div class='field'><span class='field-label'>{{ i18n.label_doi }}</span> {{ doi }}</div>
+{% when None %}
+{% endmatch %}
+{% match paper.arxiv_id %}
+{% when Some with (ax) %}
+<div class='field'><span class='field-label'>{{ i18n.label_arxiv }}</span> {{ ax }}</div>
+{% when None %}
+{% endmatch %}
+{% match paper.venue %}
+{% when Some with (v) %}
+<div class='field'><span class='field-label'>{{ i18n.label_venue }}</span> {{ v }}</div>
+{% when None %}
+{% endmatch %}
+<div class='field'><span class='field-label'>{{ i18n.label_read }}</span> {% if paper.is_read %}{{ i18n.yes }}{% else %}{{ i18n.no }}{% endif %}</div>
+<div class='field'><span class='field-label'>{{ i18n.label_tags }}</span> {{ tags_str }}</div>
+
+<div class='actions'>
+<a href='/paper/{{ paper.id }}/toggle'>{{ i18n.btn_toggle_read }}</a>
+<a href='/paper/{{ paper.id }}/delete' onclick='return confirm("{{ i18n.confirm_delete_short }}")'>{{ i18n.btn_delete }}</a>
+</div>
+
+<h2>{{ i18n.heading_notes }}</h2>
+{% for note in notes %}
+<div class='note'>
+<strong>{{ note.note_type }}</strong><br>
+{{ note.content }}
+</div>
+{% endfor %}
+
+{% if !citations.is_empty() %}
+<h2>{{ i18n.heading_citations }}</h2>
+{% for c in citations %}
+<div class='cite'>
+{% if c.is_from %}
+{{ c.direction }} &rarr; <a href='/paper/{{ c.target_id }}'>{{ c.target_title }}</a>
+{% else %}
+<a href='/paper/{{ c.source_id }}'>{{ c.source_title }}</a> &rarr; {{ c.direction }}
+{% endif %}
+<span style='color:#888'>[{{ c.relation }}]</span>
+</div>
+{% endfor %}
+{% endif %}
+
+{% if has_graph %}
+<h2>{{ i18n.heading_citation_graph }}</h2>
+<div id='graph-container'></div>
+<script src='https://unpkg.com/vis-network@9.1.9/standalone/umd/vis-network.min.js'></script>
+<script>
+fetch('/api/graph/{{ paper.id }}')
+  .then(r => r.json())
+  .then(data => {
+    var container = document.getElementById('graph-container');
+    var options = {
+      nodes: { shape: 'box', font: { size: 12 }, margin: 10, borderWidth: 1 },
+      edges: { font: { size: 10, align: 'middle' }, smooth: { type: 'continuous' } },
+      physics: { stabilization: { iterations: 100 }, barnesHut: { gravitationalConstant: -2000 } },
+      layout: { improvedLayout: true }
+    };
+    new vis.Network(container, data, options);
+  });
+</script>
+{% endif %}
+</body></html>

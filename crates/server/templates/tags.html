@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang='{{ lang }}'>
+<head>
+<meta charset='utf-8'><title>{{ i18n.heading_tags }} - Refstore</title>
+<style>
+body { font-family: -apple-system, sans-serif; margin: 2rem; background: #f8f9fa; }
+h1 { color: #333; }
+.tag { display: inline-block; background: #e3ecfa; padding: 6px 14px; border-radius: 6px; margin: 4px; }
+a { color: #4a6fa5; text-decoration: none; }
+.nav { margin-bottom: 1rem; display: flex; align-items: center; }
+.nav a { margin-right: 1rem; }
+.lang-toggle { font-size: .85em; opacity: .7; border: 1px solid #ccc; padding: 2px 8px; border-radius: 4px; }
+</style>
+</head><body>
+<div class='nav'>
+<a href='/'>{{ i18n.link_back_short }}</a>
+<a href='{{ i18n.nav_lang_url }}' class='lang-toggle'>{{ i18n.nav_lang_label }}</a>
+</div>
+<h1>{{ i18n.heading_tags }}</h1>
+{% for tag in tags %}
+<span class='tag'>{{ tag.name }}</span>
+{% endfor %}
+</body></html>

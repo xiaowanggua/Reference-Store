@@ -1,0 +1,19 @@
+[package]
+name = "refstore"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "ref"
+path = "src/main.rs"
+
+[dependencies]
+refstore-core = { path = "../core" }
+refstore-server = { path = "../server" }
+refstore-mcp = { path = "../mcp" }
+clap = { version = "4", features = ["derive", "env"] }
+comfy-table = "7"
+anyhow = "1"
+chrono = { version = "0.4", features = ["serde"] }
+serde_json = "1"
+tokio = { version = "1", features = ["full"] }

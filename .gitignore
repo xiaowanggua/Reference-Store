@@ -1,0 +1,15 @@
+# papermanager — recommended .gitignore for a Rust workspace (multi-crate)
+
+# --- Cargo / Rust build artifacts ---
+/target/
+**/target/
+
+# Cargo incremental compilation and build byproducts
+**/target/**
+**/debug/**
+**/release/**
+
+# Cargo package registry/cache
+.cargo/
+
+
